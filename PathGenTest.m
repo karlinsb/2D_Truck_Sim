@@ -16,9 +16,9 @@
 
 %% Traverse Path and solve for a,v,p?
 figure(1)
-subplot
-[~,dy] = pathGen(5/3,100,26400,0.25);
-figure(2)
+subplot(2,1,1)
+[~,~,dy] = pathGen(5/3,100,26400,0.25);
+subplot(2,1,2)
 plot(dy)
 
 %% Path Generation Function
