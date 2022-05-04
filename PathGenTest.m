@@ -52,18 +52,32 @@ for i = 1:length(x)-1
     % x_dd = 1/m_eff*(T*N*r_eff - C_dl*x_d^2 - C_rr*m*9.81*cos(th))
     
     x_dd(i+1) = (F_e-F_d-F_rr-F_a-F_g)/m_eff;
-    x_d(i+1) = x_d()
+    x_d(i+1) = x_d(5/3,100,26400);
+
 
 end
+%% new path function testing
+
+sp = pathGen(5/3,100,26400);
+x = 0:1:26400;
+y = ppval(sp,x);
+dx = diff(x);
+dy = diff(y);
+figure(1)
+stackedplot([y(1:end-1)' dy'])
+
 %% Path Generation Function
-function [x_i,sp,dy] = pathGen(h_std, spacing, dist, interp)
+function sp = pathGen(h_std, spacing, dist)
 % pathGen(), 1D Gaussian Random-Walk Path Generator
 % Generates a 1D random-walk of length dist with constant spacing and 
-% std dev h_std. outputs a cubic interpolated y with spacing interp
+% std dev h_std. outputs a cubic interpolated spline as a piecewise
+% polynomial structure
 % 
-% pathGen(5,100,1500,.5) will output an interpolated spline vector over
+% pathGen(5,100,1500) will output an interpolated piecewise polynomial over
 % 1500 units with an input spacing of 100 units, an output spacing of
 % 0.5 units, and a standard deviation between input points of 5 units.
+%
+% See also: INTERP1 PPVAL SPLINE
 
 numSam = dist/spacing;
     x = linspace(0,dist,numSam);
@@ -75,8 +89,8 @@ numSam = dist/spacing;
         y(i+1) = y(i)+dy(i);
     end
 
-    x_i = 0:interp:dist;
-    sp = spline(x,y,x_i);
+%     x_i = 0:interp:dist;
+    sp = spline(x,y);
 
 %     plot(x,y,'o',x_i,sp)
 end
