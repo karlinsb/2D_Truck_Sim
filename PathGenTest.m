@@ -2,27 +2,61 @@
 % test script and function to generate 2D road pathways and the
 % acceleration of a semi-tractor system with a parameterized dynamic model
 
+clear
+clf
 %% Define Params
-% m
-% m_eff
-% r_eff
-% T
-% N
-% 
-% C_dl
-% C_rr
-% C_a
+m=17000;
+m_eff=m*1.05;
+r_eff = .527;
+T = 1500;
+N = 2.64;
+
+% load coefs
+C_dl=1.225/2*8*0.8;
+C_rr=0.006;
+C_a =18;%kW
 
 
 %% Traverse Path and solve for a,v,p?
-figure(1)
-subplot(2,1,1)
-[~,~,dy] = pathGen(5/3,100,26400,0.25);
-subplot(2,1,2)
-plot(dy)
+[x,y,~] = pathGen(5/3,100,26400,0.25);
 
+dx = diff(x);
+dy = diff(y);
+figure(1)
+stackedplot([y(1:end-1)' dy'])
+
+x_d = zeros(1,length(x));
+x_d(1) = 20;
+x_dd = zeros(1,length(x));
+for i = 1:length(x)-1
+    % Compute Inputs
+    th = atan(dy(i)/dx(i));
+
+    % drive force at tire
+    F_e = T*N/r_eff;
+
+    % rolling resistance 
+    F_rr = C_rr*m*9.81*cos(th);
+    
+    % Aero Drag
+    F_d = C_dl*x_d(i).^2;
+    
+    % Accessory Resistance
+    % rpm = v*r_eff/N;
+    % P_a = 2.91/100+1000
+    F_a = C_a*10^3/x_d(i);
+    
+    % Grade Resistance
+    F_g = m*9.81*sin(th);
+    
+    % x_dd = 1/m_eff*(T*N*r_eff - C_dl*x_d^2 - C_rr*m*9.81*cos(th))
+    
+    x_dd(i+1) = (F_e-F_d-F_rr-F_a-F_g)/m_eff;
+    x_d(i+1) = x_d()
+
+end
 %% Path Generation Function
-function [x_i,y,dy] = pathGen(h_std, spacing, dist, interp)
+function [x_i,sp,dy] = pathGen(h_std, spacing, dist, interp)
 % pathGen(), 1D Gaussian Random-Walk Path Generator
 % Generates a 1D random-walk of length dist with constant spacing and 
 % std dev h_std. outputs a cubic interpolated y with spacing interp
@@ -44,5 +78,5 @@ numSam = dist/spacing;
     x_i = 0:interp:dist;
     sp = spline(x,y,x_i);
 
-    plot(x,y,'o',x_i,sp)
+%     plot(x,y,'o',x_i,sp)
 end
