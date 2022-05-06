@@ -75,8 +75,10 @@ stackedplot([y(1:end-1)' interp1(1:t,F_e,1:pathLen)' interp1(1:t,F_rr,1:pathLen)
             interp1(1:t,F_d,1:pathLen)' interp1(1:t,F_a,1:pathLen)'...
             interp1(1:t,F_g,1:pathLen)'],'DisplayLabels', ...
             ["Path" "F_e" "F_rr" "F_d" "F_a" "F_g"])
-
-
+% 
+% datOut = table(linspace(0,numSamp*dt,numSamp), th',x_dd',F_e' 'VariableNames',{'Time''Theta','Vel'});
+% 
+% save('pathData.mat',datOut,m,m_eff,)
 %% new path function testing
 % 
 % sp = pathGen(5/3,100,26400);
